@@ -1,9 +1,9 @@
 :root {
-  /* Color palette - darker theme with Stripe inspiration */
-  --color-bg-primary: #0a0a0a;
-  --color-bg-secondary: #111111;
-  --color-bg-tertiary: #1a1a1a;
-  --color-bg-elevated: #222222;
+  /* Color palette - even darker theme with Stripe inspiration */
+  --color-bg-primary: #050505;
+  --color-bg-secondary: #0a0a0a;
+  --color-bg-tertiary: #121212;
+  --color-bg-elevated: #1a1a1a;
   
   /* Accent colors - Stripe-inspired */
   --color-accent: #635bff;
@@ -207,59 +207,53 @@ body {
   position: relative;
 }
 
-/* Chat container */
+.main-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(to right, transparent, var(--color-accent));
+  border-top-right-radius: 3px;
+}
+
+.main-content::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 30%;
+  width: 40px;
+  height: 3px;
+  background: var(--color-success);
+  border-radius: 3px;
+}
+
+/* Chat container - more subtle, professional styling */
 .chat-container {
   flex: 1;
   overflow-y: auto;
-  margin-bottom: 24px;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   background-color: var(--color-bg-secondary);
-  border-radius: 10px;
-  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   scrollbar-width: thin;
   scrollbar-color: var(--color-border) var(--color-bg-secondary);
   position: relative;
   z-index: 1;
+  border: 1px solid var(--color-border);
 }
 
+/* Remove the blue accent line completely */
 .chat-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
-  background: linear-gradient(to bottom, 
-    var(--color-bg-secondary) 0%, 
-    rgba(20, 20, 20, 0.8) 50%, 
-    rgba(20, 20, 20, 0) 100%);
-  z-index: 2;
-  pointer-events: none;
-  border-radius: 10px 10px 0 0;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  display: none;
 }
 
-.chat-container:not(:hover)::before {
-  opacity: 0;
-}
-
-.chat-container.scrolled::before {
-  opacity: 1;
-}
-
-.chat-container::-webkit-scrollbar {
-  width: 8px;
-}
-
-.chat-container::-webkit-scrollbar-track {
-  background: var(--color-bg-secondary);
-}
-
-.chat-container::-webkit-scrollbar-thumb {
-  background-color: var(--color-border);
-  border-radius: 20px;
+.chat-container::after {
+  display: none;
 }
 
 /* Empty chat state */
@@ -306,23 +300,10 @@ body {
   height: 200%;
   background: linear-gradient(
     45deg,
-    rgba(99, 91, 255, 0.1) 0%,
-    rgba(139, 92, 246, 0.1) 25%,
-    rgba(50, 215, 75, 0.1) 50%,
-    rgba(255, 214, 10, 0.1) 75%,
-    rgba(255, 69, 58, 0.1) 100%
+    rgba(99, 91, 255, 0.05) 0%,
+    rgba(139, 92, 246, 0.05) 100%
   );
-  animation: rotate 6s linear infinite;
   opacity: 0.5;
-}
-
-@keyframes rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 
 /* Message container */
@@ -349,7 +330,11 @@ body {
 
 .user-message {
   background-color: var(--color-accent-muted);
-  border: 1px solid rgba(100, 103, 242, 0.2);
+  border-left: 3px solid var(--color-accent);
+  border-top: 1px solid rgba(99, 91, 255, 0.2);
+  border-right: 1px solid rgba(99, 91, 255, 0.1);
+  border-bottom: 1px solid rgba(99, 91, 255, 0.1);
+  background-color: rgba(99, 91, 255, 0.03);
   align-self: flex-end;
   border-bottom-right-radius: 2px;
   animation: fadeInRight 0.3s ease-out;
@@ -357,7 +342,11 @@ body {
 
 .assistant-message {
   background-color: var(--color-bg-elevated);
-  border: 1px solid var(--color-border-light);
+  border-left: 3px solid var(--color-success);
+  border-top: 1px solid rgba(50, 215, 75, 0.2);
+  border-right: 1px solid rgba(50, 215, 75, 0.1);
+  border-bottom: 1px solid rgba(50, 215, 75, 0.1);
+  background-color: rgba(50, 215, 75, 0.02);
   align-self: flex-start;
   border-bottom-left-radius: 2px;
   animation: fadeInLeft 0.3s ease-out;
@@ -533,6 +522,19 @@ body {
   position: relative;
 }
 
+.query-section::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  background: var(--color-warning);
+  border-radius: 3px;
+  margin-bottom: 10px;
+}
+
 .query-section form {
   display: flex;
   gap: 12px;
@@ -553,7 +555,7 @@ body {
 
 .query-input:focus {
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 2px var(--color-accent-muted), 0 0 15px rgba(100, 103, 242, 0.15);
+  box-shadow: 0 0 0 1px var(--color-accent-muted), 0 0 10px rgba(99, 91, 255, 0.1);
 }
 
 .query-input::placeholder {
@@ -606,7 +608,7 @@ body {
   height: 16px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  border-top-color: #fff;
+  margin-right: 8px;
   animation: spin 0.8s linear infinite;
   margin-right: 8px;
 }
@@ -685,6 +687,134 @@ body {
   }
 }
 
+/* Subtle Background Pattern - Darker with Stripe-inspired pattern */
+.app-content::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(to right, rgba(99, 91, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 91, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  z-index: -1;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Additional colorful patterns */
+.app::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(99, 91, 255, 0.03) 0%, transparent 20%),
+    radial-gradient(circle at 90% 80%, rgba(50, 215, 75, 0.03) 0%, transparent 20%),
+    radial-gradient(circle at 50% 50%, rgba(255, 214, 10, 0.02) 0%, transparent 30%),
+    radial-gradient(circle at 80% 10%, rgba(255, 69, 58, 0.03) 0%, transparent 20%);
+  z-index: -2;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Professional diagonal pattern */
+.app::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(99, 91, 255, 0.01) 10px,
+      rgba(99, 91, 255, 0.01) 20px
+    );
+  z-index: -3;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Floating elements with more professional colors */
+.floating-element-1 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(99, 91, 255, 0.08) 0%, rgba(99, 91, 255, 0) 70%);
+  top: 10%;
+  right: -100px;
+  animation: float 15s ease-in-out infinite;
+}
+
+.floating-element-2 {
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(255, 214, 10, 0.05) 0%, rgba(255, 214, 10, 0) 70%);
+  bottom: 10%;
+  left: -50px;
+  animation: float 20s ease-in-out infinite reverse;
+}
+
+.floating-element-3 {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(50, 215, 75, 0.06) 0%, rgba(50, 215, 75, 0) 70%);
+  top: 40%;
+  left: 20%;
+  animation: float 25s ease-in-out infinite 5s;
+}
+
+.floating-element-4 {
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(255, 69, 58, 0.05) 0%, rgba(255, 69, 58, 0) 70%);
+  bottom: 30%;
+  right: 20%;
+  animation: float 18s ease-in-out infinite 3s;
+}
+
+.floating-element-5 {
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.07) 0%, rgba(139, 92, 246, 0) 70%);
+  top: 60%;
+  right: 40%;
+  animation: float 22s ease-in-out infinite 7s;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(30px, 20px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* Scrollbar styling */
+.chat-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-container::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+.chat-container::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 20px;
+}
+
 /* Glow Effects and Accents */
 .glow-effect {
   position: absolute;
@@ -694,32 +824,6 @@ body {
   height: 700px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(99, 91, 255, 0.1) 0%, rgba(99, 91, 255, 0) 70%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.app::before {
-  content: '';
-  position: fixed;
-  top: 20%;
-  right: -200px;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 59, 48, 0.07) 0%, rgba(255, 59, 48, 0) 70%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.app::after {
-  content: '';
-  position: fixed;
-  bottom: -200px;
-  left: 30%;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(50, 215, 75, 0.07) 0%, rgba(50, 215, 75, 0) 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -755,53 +859,13 @@ svg {
   vertical-align: middle;
 }
 
-/* Subtle Background Pattern - Darker with Stripe-inspired pattern */
-.app-content::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
-    linear-gradient(to right, rgba(99, 91, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(99, 91, 255, 0.03) 1px, transparent 1px);
-  background-size: 20px 20px;
-  z-index: -1;
-  opacity: 0.4;
-  pointer-events: none;
-}
-
-/* Stripe-inspired gradient border */
-.chat-container {
-  position: relative;
-  z-index: 1;
-  border: 1px solid var(--color-border);
-}
-
-.chat-container::after {
-  content: '';
+/* Floating element base styles */
+.floating-element {
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(
-    to right,
-    var(--color-accent) 0%,
-    #8B5CF6 25%,
-    var(--color-success) 50%,
-    var(--color-warning) 75%,
-    var(--color-error) 100%
-  );
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
-  mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0.3;
+  border-radius: 50%;
+  opacity: 0.4;
+  filter: blur(40px);
+  z-index: -1;
   pointer-events: none;
 }
 
@@ -820,55 +884,13 @@ svg {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
-/* Stripe-inspired floating elements */
-.app-content {
-  position: relative;
-}
-
-.floating-element {
+.sidebar::after {
+  content: '';
   position: absolute;
-  border-radius: 50%;
-  opacity: 0.4;
-  filter: blur(40px);
-  z-index: -1;
-  pointer-events: none;
-}
-
-.floating-element-1 {
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(99, 91, 255, 0.2) 0%, rgba(99, 91, 255, 0) 70%);
-  top: 10%;
-  right: -100px;
-  animation: float 15s ease-in-out infinite;
-}
-
-.floating-element-2 {
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle, rgba(255, 214, 10, 0.15) 0%, rgba(255, 214, 10, 0) 70%);
-  bottom: 10%;
-  left: -50px;
-  animation: float 20s ease-in-out infinite reverse;
-}
-
-.floating-element-3 {
-  width: 250px;
-  height: 250px;
-  background: radial-gradient(circle, rgba(50, 215, 75, 0.15) 0%, rgba(50, 215, 75, 0) 70%);
-  top: 40%;
-  left: 20%;
-  animation: float 25s ease-in-out infinite 5s;
-}
-
-@keyframes float {
-  0% {
-    transform: translate(0, 0);
-  }
-  50% {
-    transform: translate(30px, 20px);
-  }
-  100% {
-    transform: translate(0, 0);
-  }
+  top: 20%;
+  right: 0;
+  width: 3px;
+  height: 60px;
+  background: #8B5CF6;
+  border-radius: 3px;
 }

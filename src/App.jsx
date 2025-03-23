@@ -181,6 +181,8 @@ function App() {
         <div className="floating-element floating-element-1"></div>
         <div className="floating-element floating-element-2"></div>
         <div className="floating-element floating-element-3"></div>
+        <div className="floating-element floating-element-4"></div>
+        <div className="floating-element floating-element-5"></div>
         
         <div className="sidebar">
           <h3>Project Explorer</h3>

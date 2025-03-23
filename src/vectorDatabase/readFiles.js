@@ -7,11 +7,8 @@
 const readFiles = async (folderPath) => {
     console.log('Reading files from:', folderPath);
     try {
-        // Use the electronAPI to read files instead of direct fs access
         const files = await window.electronAPI.readFiles(folderPath);
         
-        // We'll embed files from the main process to avoid CORS issues
-        // This approach keeps the renderer process clean and secure
         if (files && files.length > 0) {
             console.log(`Read ${files.length} files. Processing for embedding...`);
             await window.electronAPI.embedFiles(files);
