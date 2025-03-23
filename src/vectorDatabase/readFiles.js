@@ -12,6 +12,6 @@ const readFiles = async (folderPath) => {
         console.error('Error reading files:', error);
         return [];
     }
-}
+}  
 
 export default readFiles;
