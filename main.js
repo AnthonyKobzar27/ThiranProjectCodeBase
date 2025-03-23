@@ -88,6 +88,63 @@ async function createWindow() {
     }
   });
 
+  // IPC handler for embedding files in Pinecone
+  ipcMain.handle('embed-files', async (event, files) => {
+    try {
+      console.log(`Embedding ${files.length} files in Pinecone...`);
+      
+      // Import the embedding module here to keep it in the main process
+      // This avoids CORS issues and follows Electron's security model
+      const { processFiles } = require('./src/vectorDatabase/embedFiles');
+      
+      // Process the files for embedding
+      await processFiles(files);
+      
+      return { success: true, message: `Successfully embedded ${files.length} files` };
+    } catch (error) {
+      console.error('Error embedding files:', error);
+      return { success: false, error: error.message };
+    }
+  });
+
+  // IPC handler for processing queries
+  ipcMain.handle('process-query', async (event, query) => {
+    try {
+      console.log(`Processing query: "${query}"`);
+      
+      // Import the query module here to keep it in the main process
+      const { processQuery } = require('./src/vectorDatabase/queryPinecone');
+      
+      // Process the query
+      const result = await processQuery(query);
+      
+      return result;
+    } catch (error) {
+      console.error('Error processing query:', error);
+      return { 
+        success: false, 
+        response: `Error processing query: ${error.message}`,
+        error: error.message 
+      };
+    }
+  });
+
+  // IPC handler for clearing conversation
+  ipcMain.handle('clear-conversation', async (event) => {
+    try {
+      console.log('Clearing conversation history');
+      
+      // Import the query module
+      const { clearConversation } = require('./src/vectorDatabase/queryPinecone');
+      
+      // Clear the conversation
+      return clearConversation();
+    } catch (error) {
+      console.error('Error clearing conversation:', error);
+      return { success: false, error: error.message };
+    }
+  });
+
   // Keep the window open
   mainWindow.on('closed', () => {
     mainWindow = null;
