@@ -71,7 +71,7 @@ async function searchPinecone(queryVector) {
   try {
     const results = await index.query({
       vector: queryVector,
-      topK: 5,
+      topK: 10, 
       includeMetadata: true
     });
     
@@ -92,45 +92,92 @@ function extractContextFromMatches(matches) {
     return "No relevant code found.";
   }
   
-  return matches.map(match => {
+  // Group matches by file to consolidate context
+  const fileGroups = {};
+  
+  matches.forEach(match => {
     const metadata = match.metadata;
+    const filePath = metadata.filePath;
     
-    // For chunks with text preview
-    if (metadata.chunkText) {
-      return `File: ${metadata.fileName}\nPath: ${metadata.filePath}\nChunk ${metadata.chunkIndex + 1} of ${metadata.totalChunks}:\n${metadata.chunkText}`;
+    if (!fileGroups[filePath]) {
+      fileGroups[filePath] = {
+        fileName: metadata.fileName,
+        filePath: metadata.filePath,
+        chunks: [],
+        score: match.score
+      };
     }
     
-    // For whole files with text preview
-    if (metadata.fullText) {
-      return `File: ${metadata.fileName}\nPath: ${metadata.filePath}\nContent:\n${metadata.fullText}`;
+    // Add chunk or full file content
+    if (metadata.isPartial) {
+      fileGroups[filePath].chunks.push({
+        index: metadata.chunkIndex,
+        totalChunks: metadata.totalChunks,
+        text: metadata.chunkText,
+        score: match.score
+      });
+    } else {
+      fileGroups[filePath].fullText = metadata.fullText;
+    }
+  });
+  
+  // Format the context, prioritizing complete files and consolidating chunks
+  let contextParts = [];
+  
+  Object.values(fileGroups).forEach(file => {
+    let fileContext = `File: ${file.fileName}\nPath: ${file.filePath}\n\nContent:\n`;
+    
+    if (file.fullText) {
+      // We have the full file content
+      fileContext += file.fullText;
+    } else if (file.chunks.length > 0) {
+      // Sort chunks by index
+      const sortedChunks = file.chunks.sort((a, b) => a.index - b.index);
+      
+      // Combine chunks, noting any gaps
+      let lastIndex = -1;
+      sortedChunks.forEach(chunk => {
+        if (lastIndex !== -1 && chunk.index > lastIndex + 1) {
+          fileContext += `\n[...missing content...]\n\n`;
+        }
+        fileContext += chunk.text;
+        lastIndex = chunk.index;
+      });
+      
+      // Note if we're missing the end of the file
+      if (sortedChunks.length > 0 && 
+          sortedChunks[sortedChunks.length - 1].index < sortedChunks[0].totalChunks - 1) {
+        fileContext += `\n[...missing content...]\n`;
+      }
     }
     
-    // Fallback
-    return `File: ${metadata.fileName}\nPath: ${metadata.filePath}`;
-  }).join('\n\n');
+    contextParts.push(fileContext);
+  });
+  
+  return contextParts.join('\n\n' + '-'.repeat(80) + '\n\n');
 }
 
 /**
  * Generate a response using OpenAI and the context from Pinecone
  * @param {string} query - User's query
  * @param {string} context - Context from code files
- * @returns {Promise<string>} - Generated response
+ * @returns {Promise<object>} - Generated response
  */
 async function generateResponse(query, context) {
   try {
     // Prepare conversation history for context
     const messages = [
-      { role: "system", content: `You are a helpful code assistant that answers questions about the user's codebase. Use the provided code context to inform your answers. Be concise and technical but also friendly. If you don't know something for certain, say so rather than guessing.` },
+      { role: "system", content: `You are a high-level code summarizer. Focus on what the application DOES, not how it works. Describe functionality in 2-3 sentences maximum. Example: "This code creates a website with contact pages for founders and sponsors, plus a demo page. The company is based in SF." Avoid technical details unless specifically asked. Never list imports, hooks, or code structure.` },
       ...conversationHistory,
-      { role: "user", content: `Here is some context from my codebase:\n\n${context}\n\nMy question is: ${query}` }
+      { role: "user", content: `Here is code context:\n\n${context}\n\nMy question: ${query}` }
     ];
     
     // Generate a response
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4-turbo", 
       messages: messages,
-      max_tokens: 500,
-      temperature: 0.7,
+      max_tokens: 200, 
+      temperature: 0.2,
     });
     
     // Get the response text
@@ -153,7 +200,7 @@ async function generateResponse(query, context) {
   } catch (error) {
     console.error('Error generating response:', error);
     return {
-      response: `Error generating response: ${error.message}`,
+      response: `Error: ${error.message}`,
       context: context,
       success: false
     };

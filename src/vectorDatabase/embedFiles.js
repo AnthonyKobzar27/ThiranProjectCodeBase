@@ -122,8 +122,8 @@ async function processBatch(batch) {
         continue;
       }
       
-      // For large files, split into chunks
-      const chunkSize = 1000; // Characters per chunk
+      // For large files, split into chunks with larger chunk size
+      const chunkSize = 4000; // Increased from 1000 to 4000 characters per chunk
       
       if (content.length > chunkSize) {
         // Split into chunks with some overlap
@@ -133,7 +133,7 @@ async function processBatch(batch) {
         while (startPos < content.length) {
           const endPos = Math.min(startPos + chunkSize, content.length);
           chunks.push(content.slice(startPos, endPos));
-          startPos += chunkSize - 200; // 200 character overlap
+          startPos += chunkSize - 500; // 500 character overlap (increased from 200)
           
           if (startPos >= content.length) break;
         }
@@ -152,7 +152,8 @@ async function processBatch(batch) {
               lastModified: file.lastModified,
               chunkIndex: i,
               totalChunks: chunks.length,
-              chunkText: chunks[i].slice(0, 100) + '...' // Store a preview
+              chunkText: chunks[i], // Store the full chunk text instead of just a preview
+              isPartial: true
             }
           });
         }
@@ -168,7 +169,8 @@ async function processBatch(batch) {
             filePath: file.path,
             fileSize: file.size,
             lastModified: file.lastModified,
-            fullText: content.length <= 100 ? content : content.slice(0, 100) + '...' // Store a preview or full text if small
+            fullText: content, // Store the full text instead of just a preview
+            isPartial: false
           }
         });
       }
@@ -204,7 +206,7 @@ async function processFiles(files) {
   console.log(`Processing ${files.length} files...`);
   
   // Process files in batches to avoid overwhelming the APIs
-  const batchSize = 5;
+  const batchSize = 5
   
   for (let i = 0; i < files.length; i += batchSize) {
     const batch = files.slice(i, i + batchSize);
