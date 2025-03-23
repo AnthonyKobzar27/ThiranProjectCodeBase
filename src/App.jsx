@@ -173,11 +173,15 @@ function App() {
       <header className="app-header">
         <div className="logo">
           <div className="logo-glow"></div>
-          <h2>Code<span className="accent">Assistant</span></h2>
+          <h2>Code<span className="accent">Buddy</span></h2>
         </div>
       </header>
 
       <div className="app-content">
+        <div className="floating-element floating-element-1"></div>
+        <div className="floating-element floating-element-2"></div>
+        <div className="floating-element floating-element-3"></div>
+        
         <div className="sidebar">
           <h3>Project Explorer</h3>
           <button className="primary-button" onClick={handleSelectFolder}>
