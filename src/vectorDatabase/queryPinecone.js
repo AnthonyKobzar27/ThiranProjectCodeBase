@@ -167,7 +167,7 @@ async function generateResponse(query, context) {
   try {
     // Prepare conversation history for context
     const messages = [
-      { role: "system", content: `You are a high-level code summarizer. Focus on what the application DOES, not how it works. Describe functionality in 2-3 sentences maximum. Example: "This code creates a website with contact pages for founders and sponsors, plus a demo page. The company is based in SF." Avoid technical details unless specifically asked. Never list imports, hooks, or code structure.` },
+      { role: "system", content: `You are a high-level code summarizer. Focus on what the application DOES, not how it works. Describe functionality in 2-3 sentences maximum. Example: "This code creates a website with contact pages for founders and sponsors, plus a demo page. The company is based in SF." Avoid technical details unless specifically asked. Never list imports, hooks, or code structure. if you are saying a list of items - make sure to use bullet points and make your responses as formatted and organized and good looking as possible.` },
       ...conversationHistory,
       { role: "user", content: `Here is code context:\n\n${context}\n\nMy question: ${query}` }
     ];

@@ -10,6 +10,9 @@ contextBridge.exposeInMainWorld(
     minimizeWindow: () => ipcRenderer.invoke('window-minimize'),
     maximizeWindow: () => ipcRenderer.invoke('window-maximize'),
     closeWindow: () => ipcRenderer.invoke('window-close'),
+    resizeWindow: () => ipcRenderer.invoke('window-resize'),
+    compressWindow: () => ipcRenderer.invoke('window-compress'),
+    expandWindow: () => ipcRenderer.invoke('window-expand'),
     onWindowMaximized: (callback) => ipcRenderer.on('window-maximized', (_, value) => callback(value))
   }
 );

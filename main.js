@@ -6,17 +6,32 @@ const fs = require('fs');
 let mainWindow = null;
 
 async function createWindow() {
+  // Get screen dimensions
+  const { screen } = require('electron');
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width, height } = primaryDisplay.workAreaSize;
+
   // Create the browser window
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
+    width: 380,
+    height: 530,
+    x: width - 380 - 40, // Position at the right edge of the screen with 40px offset
+    y: 40, // Position at the top of the screen with 40px offset
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
-      devTools: true
+      preload: path.join(__dirname, 'preload.js')
     },
-    backgroundColor: '#0f172a', // Match your app's background color
+    transparent: true,
+    frame: false,
+    backgroundColor: '#00000000',
+    resizable: false,
+    hasShadow: true,
+    alwaysOnTop: true, // Keep window on top
+    skipTaskbar: false, // Show in taskbar
+    autoHideMenuBar: true,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: false
   });
 
   // Load the app
@@ -50,10 +65,26 @@ async function createWindow() {
       properties: ['openDirectory']
     });
     
-    if (!result.canceled) {
-      return result.filePaths[0];
+    return result; // Return the complete result object
+  });
+
+  // IPC handlers for window control
+  ipcMain.handle('window-minimize', () => {
+    if (mainWindow) mainWindow.minimize();
+  });
+
+  ipcMain.handle('window-maximize', () => {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize();
+      mainWindow.webContents.send('window-maximized', false);
+    } else {
+      mainWindow.maximize();
+      mainWindow.webContents.send('window-maximized', true);
     }
-    return null;
+  });
+
+  ipcMain.handle('window-close', () => {
+    if (mainWindow) mainWindow.close();
   });
 
   // IPC handler for reading files in a directory
@@ -143,6 +174,26 @@ async function createWindow() {
       console.error('Error clearing conversation:', error);
       return { success: false, error: error.message };
     }
+  });
+
+  // IPC handler for window resize
+  ipcMain.handle('window-resize', () => {
+    // Allow dynamic resizing based on content
+    const [width, height] = mainWindow.getSize();
+    // Keep the width but adjust height if needed
+    mainWindow.setSize(width, height);
+  });
+
+  // IPC handler for window compress
+  ipcMain.handle('window-compress', () => {
+    // Set the window to a small size when compressed
+    mainWindow.setSize(50, 50);
+  });
+
+  // IPC handler for window expand
+  ipcMain.handle('window-expand', () => {
+    // Reset to default size when expanded
+    mainWindow.setSize(380, 500);
   });
 
   // Keep the window open
